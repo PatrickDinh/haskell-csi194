@@ -14,6 +14,8 @@ ex1Tests :: [Test]
 ex1Tests = [ testF2 "exactMatches test" exactMatches
              [ ([Red, Blue, Green, Yellow], [Blue, Green, Yellow, Red], 0)
              , ([Red, Blue, Green, Yellow], [Red, Purple, Green, Orange], 2)
+             , ([Red, Blue, Green, Yellow], [Red, Purple, Orange], 1)
+             , ([Purple, Green, Yellow], [Red, Purple, Orange], 0)
              ]
            ]
 
