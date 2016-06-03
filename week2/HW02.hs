@@ -1,6 +1,8 @@
 {-# OPTIONS_GHC -Wall #-}
 module HW02 where
 
+import Data.List
+
 -- Mastermind -----------------------------------------
 
 -- A peg can be one of six colors
@@ -34,11 +36,11 @@ exactMatches (c1:s1) (c2:s2)
 
 -- For each peg in xs, count how many times is occurs in ys
 countColors :: Code -> [Int]
-countColors = undefined
+countColors code = map (\xs -> length xs - 1) (group (sort (concat [colors, code]))) 
 
 -- Count number of matches between the actual code and the guess
 matches :: Code -> Code -> Int
-matches = undefined
+matches code1 code2 = sum (map (\xs -> minimum xs) (transpose[(countColors code1), (countColors code2)]))
 
 -- Exercise 3 -----------------------------------------
 
