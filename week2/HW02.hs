@@ -43,20 +43,26 @@ matches :: Code -> Code -> Int
 matches code1 code2 = sum (map (\xs -> minimum xs) (transpose[(countColors code1), (countColors code2)]))
 
 -- Exercise 3 -----------------------------------------
+nonExactMatches :: Code -> Code -> Int
+nonExactMatches secret guess = (matches secret guess) - (exactMatches secret guess)
 
 -- Construct a Move from a guess given the actual code
 getMove :: Code -> Code -> Move
-getMove = undefined
+getMove secret guess = Move guess (exactMatches secret guess) (nonExactMatches secret guess)
 
 -- Exercise 4 -----------------------------------------
 
 isConsistent :: Move -> Code -> Bool
-isConsistent = undefined
+isConsistent (Move c e n) code = (exactMatches c code) == e 
+                                 && (nonExactMatches c code) == n 
 
 -- Exercise 5 -----------------------------------------
 
 filterCodes :: Move -> [Code] -> [Code]
-filterCodes = undefined
+filterCodes (Move _ _ _) [] = []
+filterCodes (Move c e n) (code:codes)
+    | isConsistent (Move c e n) code = code : (filterCodes (Move c e n) codes)
+    | otherwise                      = (filterCodes (Move c e n) codes)
 
 -- Exercise 6 -----------------------------------------
 
