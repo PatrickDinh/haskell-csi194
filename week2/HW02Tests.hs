@@ -16,6 +16,7 @@ ex1Tests = [ testF2 "exactMatches test" exactMatches
              , ([Red, Blue, Green, Yellow], [Red, Purple, Green, Orange], 2)
              , ([Red, Blue, Green, Yellow], [Red, Purple, Orange], 1)
              , ([Purple, Green, Yellow], [Red, Purple, Orange], 0)
+             , ([Purple, Green, Yellow, Red], [Purple, Green, Yellow, Red, Orange], 4)
              ]
            ]
 
@@ -68,7 +69,9 @@ ex5Tests = [ testF2 "filterCodes test" filterCodes
 -- Exercise 6 -----------------------------------------
 
 ex6Tests :: [Test]
-ex6Tests = []
+ex6Tests = [ testF1 "allCodes test" allCodes [ (0, []) ],
+             testF1 "countAllCodes test" countAllCodes [ (0, 0), (2, 36) ]
+           ]
 
 -- Exercise 7 -----------------------------------------
 

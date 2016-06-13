@@ -53,8 +53,8 @@ getMove secret guess = Move guess (exactMatches secret guess) (nonExactMatches s
 -- Exercise 4 -----------------------------------------
 
 isConsistent :: Move -> Code -> Bool
-isConsistent (Move c e n) code = (exactMatches c code) == e 
-                                 && (nonExactMatches c code) == n 
+isConsistent (Move guess e n) code = (exactMatches code guess) == e 
+                                   && (nonExactMatches code guess) == n 
 
 -- Exercise 5 -----------------------------------------
 
@@ -67,12 +67,26 @@ filterCodes (Move c e n) (code:codes)
 -- Exercise 6 -----------------------------------------
 
 allCodes :: Int -> [Code]
-allCodes = undefined
+allCodes 0 = []
+allCodes 1 = map (\c -> [c]) colors
+allCodes n = concatMap (\xs -> (map (\c -> c:xs) colors)) (allCodes (n - 1))
+
+countAllCodes :: Int -> Int
+countAllCodes n = length (allCodes n)
 
 -- Exercise 7 -----------------------------------------
+makeGuesses :: Code -> [Code] -> [Move]
+makeGuesses secret codes = go [] secret codes
+    where go :: [Move] -> Code -> [Code] -> [Move]
+          go acc _ []  = acc
+          go acc c (x:xs)
+            | (exactMatches c x) == (length x) = (acc ++ [move])
+            | (matches c x) == (length c) = go (acc ++ [move]) secret (filterCodes (move) xs)
+            | otherwise = go (acc ++ [move]) secret xs 
+            where move = getMove c x
 
 solve :: Code -> [Move]
-solve = undefined
+solve secret = makeGuesses secret (allCodes 6)
 
 -- Bonus ----------------------------------------------
 
