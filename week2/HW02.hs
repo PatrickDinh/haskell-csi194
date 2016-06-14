@@ -71,22 +71,21 @@ allCodes 0 = []
 allCodes 1 = map (\c -> [c]) colors
 allCodes n = concatMap (\xs -> (map (\c -> c:xs) colors)) (allCodes (n - 1))
 
+-- Just for testing
 countAllCodes :: Int -> Int
 countAllCodes n = length (allCodes n)
 
 -- Exercise 7 -----------------------------------------
-makeGuesses :: Code -> [Code] -> [Move]
-makeGuesses secret codes = go [] secret codes
-    where go :: [Move] -> Code -> [Code] -> [Move]
-          go acc _ []  = acc
-          go acc c (x:xs)
-            | (exactMatches c x) == (length x) = (acc ++ [move])
-            | (matches c x) == (length c) = go (acc ++ [move]) secret (filterCodes (move) xs)
-            | otherwise = go (acc ++ [move]) secret xs 
-            where move = getMove c x
+makeGuesses :: [Move] -> Code -> [Code] -> [Move]
+makeGuesses moves _ [] = moves
+makeGuesses moves secret (code: codes)
+    | (exactMatches secret code) == 4 = (moves ++ [move])
+    | (matches secret code) == 4 = makeGuesses (moves ++ [move]) secret (filterCodes (move) codes)
+    | otherwise = makeGuesses (moves ++ [move]) secret codes
+    where move = getMove secret code
 
 solve :: Code -> [Move]
-solve secret = makeGuesses secret (allCodes 6)
+solve secret = makeGuesses [] secret (allCodes 4)
 
 -- Bonus ----------------------------------------------
 
