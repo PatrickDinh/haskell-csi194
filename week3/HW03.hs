@@ -34,15 +34,25 @@ type State = String -> Int
 -- Exercise 1 -----------------------------------------
 
 extend :: State -> String -> Int -> State
-extend = undefined
+extend st name val = \x -> if x == name then val else st x 
 
 empty :: State
-empty = undefined
+empty _ = 0
 
 -- Exercise 2 -----------------------------------------
 
 evalE :: State -> Expression -> Int
-evalE = undefined
+evalE _ (Val num) = num
+evalE state (Var name) = state name
+evalE state (Op exp1 Plus exp2) = evalE state exp1 + evalE state exp2
+evalE state (Op exp1 Minus exp2) = evalE state exp1 - evalE state exp2
+evalE state (Op exp1 Times exp2) = evalE state exp1 * evalE state exp2
+evalE state (Op exp1 Divide exp2) = evalE state exp1 `div` evalE state exp2
+evalE state (Op exp1 Gt exp2) = if evalE state exp1 > evalE state exp2 then 1 else 0
+evalE state (Op exp1 Ge exp2) = if evalE state exp1 >= evalE state exp2 then 1 else 0
+evalE state (Op exp1 Lt exp2) = if evalE state exp1 < evalE state exp2 then 1 else 0
+evalE state (Op exp1 Le exp2) = if evalE state exp1 <= evalE state exp2 then 1 else 0
+evalE state (Op exp1 Eql exp2) = if evalE state exp1 == evalE state exp2 then 1 else 0
 
 -- Exercise 3 -----------------------------------------
 
@@ -54,16 +64,31 @@ data DietStatement = DAssign String Expression
                      deriving (Show, Eq)
 
 desugar :: Statement -> DietStatement
-desugar = undefined
+desugar (Assign str expr) = DAssign str expr
+desugar (Incr str) = DAssign str (Op (Var str) Plus (Val 1))
+desugar (If expr stmt1 stmt2) = DIf expr (desugar stmt1) (desugar stmt2)
+desugar (While expr stmt) = DWhile expr (desugar stmt)
+desugar (For stmt1 expr stmt2 stmt3) = DSequence (desugar stmt1) (DWhile expr (DSequence (desugar stmt3) (desugar stmt2))) 
+desugar (Sequence stmt1 stmt2) = DSequence (desugar stmt1) (desugar stmt2)
+desugar Skip = DSkip
 
 
 -- Exercise 4 -----------------------------------------
 
 evalSimple :: State -> DietStatement -> State
-evalSimple = undefined
+evalSimple state (DAssign str expr) = extend state str (evalE state expr)
+evalSimple state (DIf expr stmt1 stmt2) = if (evalE state expr) /= 0 
+  then (evalSimple state stmt1)
+  else (evalSimple state stmt2)
+evalSimple state (DWhile expr stmt) = if (evalE state expr) /= 0 
+  then (evalSimple state (DSequence stmt (DWhile expr stmt))) 
+  else state
+evalSimple state (DSequence stmt1 stmt2) = let s1 = evalSimple state stmt1
+                                           in evalSimple s1 stmt2
+evalSimple state DSkip = state
 
 run :: State -> Statement -> State
-run = undefined
+run state stmt = evalSimple state (desugar stmt)
 
 -- Programs -------------------------------------------
 
