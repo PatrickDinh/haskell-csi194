@@ -76,7 +76,8 @@ ex6Tests = [ testF1 "allCodes test" allCodes [ (0, []) ],
 -- Exercise 7 -----------------------------------------
 
 ex7Tests :: [Test]
-ex7Tests = []
+ex7Tests = [ 
+           ]
 
 -- Bonus ----------------------------------------------
 

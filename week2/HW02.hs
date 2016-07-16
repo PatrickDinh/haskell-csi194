@@ -84,6 +84,12 @@ makeGuesses moves secret (code: codes)
     | otherwise = makeGuesses (moves ++ [move]) secret codes
     where move = getMove secret code
 
+makeGuessesAtLength :: [Move] -> Code -> Int -> [Move]
+makeGuessesAtLength moves _ 0 = moves
+makeGuessesAtLength moves secret length
+    | last (makeGuesses moves secret (allCodes length))
+    | otherwise makeGuessesAtLength moves secret (length - 1)
+
 solve :: Code -> [Move]
 solve secret = makeGuesses [] secret (allCodes 4)
 
