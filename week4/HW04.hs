@@ -29,17 +29,20 @@ showTerm 1 deg = "x^" ++ (show deg)
 showTerm (-1) deg = "-x^" ++ (show deg)
 showTerm cof deg = (show cof) ++ "x^" ++ (show deg)
 
+concatTerms :: String -> String -> String
+concatTerms "" term2 = term2
+concatTerms term1 "" = term1
+concatTerms term1 term2 = term1 ++ " + " ++ term2
+
 instance (Num a, Eq a, Show a) => Show (Poly a) where
+    show (P [0]) = "0"
     show (P arr) = show' arr 0
         where show' :: (Num a1, Eq a1, Show a1) => [a1] -> a1 -> String
               show' [] _ = ""
-              show' (0:t) index = (show' t $index + 1)
-              show' (h:[]) index = (showTerm h index)
-              show' (h:0:[]) index = show' (h:[]) index
-              show' (h:0:t) index = (show' t $index + 2) ++ " + " ++ (showTerm h index)
-              show' (h:t) index = (show' t $index + 1) ++ " + " ++ (showTerm h index)
-              
+              show' (h:t) index = concatTerms (show' t $index + 1) (showTerm h index)
+
 -- Exercise 4 -----------------------------------------
+
 
 plus :: Num a => Poly a -> Poly a -> Poly a
 plus (P a) (P b) = P (mergeArr a b)
