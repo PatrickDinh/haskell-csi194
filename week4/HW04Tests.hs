@@ -28,7 +28,7 @@ ex03Tests = [
               [
                   (P [0], "0"),
                   (P [2], "2"),
-                  (P [0, 1], "x")
+                  (P [0, 1], "x"),
                   (P [1, 1], "x + 1"),
                   (P [1, 0], "1"),
                   (P [1, 0, 2], "2x^2 + 1"),
@@ -40,14 +40,14 @@ ex03Tests = [
 
 ex04Tests :: [Test]
 ex04Tests = [
-              testF1 "Plus tests" plus
+              testF1 "Plus tests" show
               [
-                  (P[0], P[0], "0"),
-                  (P[0], P[1], "1"),
-                  (P[1, 1], P[1], "x + 2"),
-                  (P[2, 1, -2], P[-2, 0, 1], "-x^2 + x")
+                  ((plus (P[0]) (P[0])), "0"),
+                  ((plus (P[0]) (P[1])), "1"),
+                  ((plus (P[1, 1]) (P[1])), "x + 2"),
+                  ((plus (P[2, 1, -2]) (P[-2, 0, 1])), "-x^2 + x")
               ]
             ]
 
 allTests :: [Test]
-allTests = concat [ex02Tests, ex03Tests]
+allTests = concat [ex02Tests, ex03Tests, ex04Tests]

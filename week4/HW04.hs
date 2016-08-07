@@ -1,6 +1,8 @@
 {-# OPTIONS_GHC -Wall #-}
 module HW04 where
 
+import Data.List
+
 newtype Poly a = P [a]
 
 -- Exercise 1 -----------------------------------------
@@ -42,15 +44,11 @@ instance (Num a, Eq a, Show a) => Show (Poly a) where
               show' (h:t) index = concatTerms (show' t $index + 1) (showTerm h index)
 
 -- Exercise 4 -----------------------------------------
-
+zipWithSum :: Num a => [a] -> [a] -> [a]
+zipWithSum arr1 arr2 = map (\e -> sum e) $ transpose [arr1, arr2]
 
 plus :: Num a => Poly a -> Poly a -> Poly a
-plus (P a) (P b) = P (mergeArr a b)
-    where mergeArr::(Num a) => [a] -> [a] -> [a]
-          mergeArr [] [] = []
-          mergeArr arr [] = arr
-          mergeArr [] arr = arr
-          mergeArr (h1:t1) (h2:t2) = (h1+h2):(mergeArr t1 t2)
+plus (P a) (P b) = P (zipWithSum a b)
 
 -- Exercise 5 -----------------------------------------
 
