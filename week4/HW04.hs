@@ -44,19 +44,24 @@ instance (Num a, Eq a, Show a) => Show (Poly a) where
               show' (h:t) index = concatTerms (show' t $index + 1) (showTerm h index)
 
 -- Exercise 4 -----------------------------------------
-zipWithSum :: Num a => [a] -> [a] -> [a]
-zipWithSum arr1 arr2 = map (\e -> sum e) $ transpose [arr1, arr2]
-
 plus :: Num a => Poly a -> Poly a -> Poly a
-plus (P a) (P b) = P (zipWithSum a b)
+plus (P a) (P b) = P (map (\e -> sum e) $ transpose [a, b])
 
 -- Exercise 5 -----------------------------------------
 
-multiplePolyWithNum :: Num a => Poly a -> a -> Poly a
-multiplePolyWithNum (P array) n = P ((map (\i -> i * n)) array) 
+timesBy :: Num a => [a] -> a -> [a]
+timesBy xs n = (map (\i -> i * n)) xs
+
+sumPolys :: Num a => [Poly a] -> Poly a
+sumPolys [] = P []
+sumPolys (h:t) = plus h (sumPolys t)
 
 times :: Num a => Poly a -> Poly a -> Poly a
-times = undefined
+times p (P xs) = sumPolys $ times' p xs []
+    where times':: Num a => Poly a -> [a] -> [a] -> [Poly a]
+          times' (P _) [] __ = [P []] 
+          times' (P xs') [n] zs = [P (zs ++ timesBy xs' n)]
+          times' (P xs') (h:t) zs = (P (zs ++ timesBy xs' h)):(times' (P xs') t (0:zs))
 
 -- Exercise 6 -----------------------------------------
 
