@@ -5,6 +5,7 @@ module HW05 where
 import Data.ByteString.Lazy (ByteString)
 import Data.Map.Strict (Map)
 import System.Environment (getArgs)
+import Data.Bits (xor)
 
 import qualified Data.ByteString.Lazy as BS
 import qualified Data.Map.Strict as Map
@@ -14,22 +15,50 @@ import Parser
 -- Exercise 1 -----------------------------------------
 
 getSecret :: FilePath -> FilePath -> IO ByteString
-getSecret = undefined
+getSecret o m = do
+    bs1 <- BS.readFile o
+    bs2 <- BS.readFile m
+    let diff = filter (\x -> x /= 0) (BS.zipWith xor bs1 bs2)
+        result = BS.pack diff
+    return result
+
 
 -- Exercise 2 -----------------------------------------
 
+decryptByteString :: ByteString -> ByteString -> ByteString
+decryptByteString key "" = BS.empty
+decryptByteString key encrypted = BS.concat[(BS.pack (BS.zipWith xor key takenEncrypted)), (decryptByteString key droppedEncrypted)]
+  where takenEncrypted = BS.take (BS.length key) encrypted
+        droppedEncrypted = BS.drop (BS.length key) encrypted
+
 decryptWithKey :: ByteString -> FilePath -> IO ()
-decryptWithKey = undefined
+decryptWithKey bs f = do
+    bsEnc <- BS.readFile (f ++ ".enc")
+    let result = decryptByteString bs bsEnc
+    BS.writeFile f result
 
 -- Exercise 3 -----------------------------------------
 
 parseFile :: FromJSON a => FilePath -> IO (Maybe a)
-parseFile = undefined
+parseFile f = do
+    bs <- BS.readFile f
+    let r = Parser.decode bs
+    return r
 
 -- Exercise 4 -----------------------------------------
+preMaybe :: Maybe [Transaction] -> Maybe [TId] -> Maybe [Transaction]
+preMaybe maybeTrans maybeVictims = case maybeTrans of
+                                  Nothing -> Nothing
+                                  Just trans -> case maybeVictims of
+                                                  Nothing -> Nothing
+                                                  Just victims -> Just ([x | x <- trans, elem (tid x) victims])
 
 getBadTs :: FilePath -> FilePath -> IO (Maybe [Transaction])
-getBadTs = undefined
+getBadTs victimPath transPath = do 
+    victims <- parseFile victimPath :: IO (Maybe [TId])
+    trans <- parseFile transPath :: IO (Maybe [Transaction])  
+    let result = preMaybe trans victims
+    return result
 
 -- Exercise 5 -----------------------------------------
 
